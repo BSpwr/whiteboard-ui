@@ -11,13 +11,35 @@
 }
 
 .colorBox {
-  padding-right: 1em;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 1em;
 }
 
 .eraserBox {
+  cursor: pointer;
   margin-top: auto;
   margin-bottom: auto;
+  margin-right: 1em;
+  box-shadow: 0 0 0.2em black;
 }
+
+.penBox {
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 1em;
+  box-shadow: 0 0 0.2em black;
+}
+
+.rulerBox {
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 1em;
+  box-shadow: 0 0 0.2em black;
+}
+
 
 /* .controls div {
   flex-direction: row;

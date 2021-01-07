@@ -1,21 +1,46 @@
 import React from "react";
 import "./Controls.css";
-import Color from "../Color/Color";
-import Eraser from "../Eraser/Eraser";
-import { AppBar } from '@material-ui/core';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEraser, faPen, faRuler } from "@fortawesome/free-solid-svg-icons";
+import { CompactPicker } from "react-color";
 
 function Controls(props) {
   return (
     <div className="controls">
-      <div className="colorBox"><Color handleColor={props.handleColor} /></div>
-      <div className="eraserBox"><Eraser handleColor={props.handleColor} /></div>
-
-      {/* 
-      <Eraser handleColor={props.handleColor} />
-      <Eraser handleColor={props.handleColor} />
-      <Eraser handleColor={props.handleColor} /> */}
-
+      <div className="colorBox">
+        <CompactPicker color={props.color} onChange={(colorPicker) =>
+          props.handleColor(colorPicker.hex)
+        } />
+      </div>
+      <div className="eraserBox">
+        <FontAwesomeIcon
+          title="erase"
+          icon={faEraser}
+          className="fa-icon"
+          size="5x"
+          onClick={() => {
+            props.handleMode(props.modes["ERASE"]);
+          }}
+          inverse />
+      </div>
+      <div className="penBox">
+        <FontAwesomeIcon
+          title="erase"
+          icon={faPen}
+          className="fa-icon"
+          size="5x"
+          onClick={() => props.handleMode(props.modes["PEN"])}
+          inverse />
+      </div>
+      <div className="rulerBox">
+        <FontAwesomeIcon
+          title="erase"
+          icon={faRuler}
+          className="fa-icon"
+          size="5x"
+          onClick={() => props.handleMode(props.modes["LINE"])}
+          inverse />
+      </div>
     </div>
   );
 }

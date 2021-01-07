@@ -5,8 +5,12 @@ import "./Board.css";
 import Controls from "../Controls/Controls";
 
 function Board() {
-    const canvasRef = React.useRef(null);
-    const parentRef = React.useRef(null);
+
+    const modes = Object.freeze({ "PEN": 0, "LINE": 1, "ERASE": 2 });
+
+    const canvasRef = useRef(null);
+    const parentRef = useRef(null);
+    const [mode, setMode] = useState(modes["PEN"]);
     const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
     const [drawing, setDrawing] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -66,22 +70,36 @@ function Board() {
     }, []);
 
     const handleMouseDown = (e) => {
+        console.log(e.clientX, e.clientY);
         setDrawing(true);
-        setPosition({
-            x: parseInt(e.clientX - canvasOffset.x),
-            y: parseInt(e.clientY - canvasOffset.y),
-        });
+        if (mode === modes["LINE"]) {
+            let mouseX = e.clientX - canvasOffset.x;
+            let mouseY = e.clientY - canvasOffset.y;
+            setPosition({ x: mouseX, y: mouseY });
+        }
     }
-    const handleMouseUp = () => {
+
+    const handleMouseUp = (e) => {
+        console.log(e.clientX, e.clientY);
+        if (mode === modes["LINE"]) {
+            handleDrawLine(e);
+        }
         setDrawing(false);
     }
 
     const handleMouseMove = (e) => {
+        if (mode === modes["PEN"] || mode === modes["ERASE"]) {
+            handleDrawLine(e);
+        }
+    }
+
+    const handleDrawLine = (e) => {
         let mouseX = e.clientX - canvasOffset.x;
         let mouseY = e.clientY - canvasOffset.y;
         if (drawing) {
-            drawLine(position.x, position.y, mouseX, mouseY, color, 4);
-            publishDraw(position.x, position.y, mouseX, mouseY, color, 4);
+            let activeColor = mode === modes["ERASE"] ? "#FFFFFF" : color;
+            drawLine(position.x, position.y, mouseX, mouseY, activeColor, 4);
+            publishDraw(position.x, position.y, mouseX, mouseY, activeColor, 4);
         }
         setPosition({ x: mouseX, y: mouseY });
     }
@@ -117,9 +135,17 @@ function Board() {
         });
     }
 
+    const handleColorChange = (c) => {
+        setColor(c);
+    }
+
+    const handleModeChange = (m) => {
+        setMode(m);
+    }
+
     return (
         <div className="board" ref={parentRef}>
-            <Controls handleColor={(c) => setColor(c)} />
+            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
