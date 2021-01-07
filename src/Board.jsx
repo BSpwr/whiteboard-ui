@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs'
 import * as SockJS from 'sockjs-client';
 import './styles/board.css';
@@ -125,7 +125,6 @@ const Board = () => {
 
         // ----------------------- socket.io connection ----------------------------
         const onDrawingEvent = (data) => {
-            console.log(data);
             const w = canvas.width;
             const h = canvas.height;
             drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
