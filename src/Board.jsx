@@ -1,9 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-// import SockJsClient from 'react-stomp';
-// import io from 'socket.io-client';
 import { Client } from '@stomp/stompjs'
 import * as SockJS from 'sockjs-client';
-import webstomp from "webstomp-client";
 import './styles/board.css';
 
 
@@ -44,8 +41,6 @@ const Board = () => {
         // ------------------------------- create the drawing ----------------------------
 
         const drawLine = (x0, y0, x1, y1, color, emit) => {
-            console.log(`REE:`);
-            console.log(x0, y0, x1, y1, color, emit);
             context.beginPath();
             context.moveTo(x0, y0);
             context.lineTo(x1, y1);
@@ -58,16 +53,16 @@ const Board = () => {
             const w = canvas.width;
             const h = canvas.height;
 
-            socketRef.current.send(
-                "/app/user-all",
-                JSON.stringify({
+            socketRef.current.publish({
+                destination: "/app/user-all",
+                body: JSON.stringify({
                     x0: x0 / w,
                     y0: y0 / h,
                     x1: x1 / w,
                     y1: y1 / h,
                     color,
                 })
-            );
+            });
         };
 
         // ---------------- mouse movement --------------------------------------
@@ -136,75 +131,31 @@ const Board = () => {
             drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
         }
 
-        socketRef.current = webstomp.over(SockJS("http://localhost:8080/ws"), {
-            debug: false,
-            heartbeat: { incoming: 0, outgoing: 1000 },
-            protocols: ['v12.stomp']
-        });
-        socketRef.current.connect(
-            {},
-            () => {
-                socketRef.current.subscribe("/topic/msg", (message) => {
+        const stompConfig = {
+            webSocketFactory: () => {
+                return new SockJS("http://localhost:8080/ws");
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
+            // Subscriptions should be done inside onConnect as those need to reinstated when the broker reconnects
+            onConnect: function (frame) {
+                // The return object has a method called `unsubscribe`
+                socketRef.current.subscribe('/topic/msg', function (message) {
                     const payload = JSON.parse(message.body);
                     onDrawingEvent(payload);
                 });
-            },
-            (err) => console.log(err));
+            }
+        };
 
-        // const stompConfig = {
-        //     webSocketFactory: () => {
-        //         return new SockJS("http://localhost:8080/ws");
-        //     },
-        //     // brokerURL: 'http://localhost:8080/ws',
-        //     reconnectDelay: 5000,
-        //     heartbeatIncoming: 4000,
-        //     heartbeatOutgoing: 4000,
-        //     // Subscriptions should be done inside onConnect as those need to reinstated when the broker reconnects
-        //     onConnect: function (frame) {
-        //         // The return object has a method called `unsubscribe`
-        //         const subscription = socketRef.current.subscribe('/topic', function (message) {
-        //             const payload = JSON.parse(message.body);
-        //             onDrawingEvent(payload);
-        //         });
-        //     }
-        // };
-
-        // socketRef.current = new Client(stompConfig);
-        // socketRef.current.activate();
-
-        // socketRef.current = new Client({
-        //     brokerURL: 'ws://localhost:8080/ws',
-        //     reconnectDelay: 5000,
-        //     heartbeatIncoming: 4000,
-        //     heartbeatOutgoing: 4000,
-        // });
-        // socketRef.current = io.connect('/');
-        // socketRef.current.on('drawing', onDrawingEvent);
+        socketRef.current = new Client(stompConfig);
+        socketRef.current.activate();
     }, []);
 
     // ------------- The Canvas and color elements --------------------------
 
     return (
         <div>
-            {/* <SockJsClient url='http://localhost:8080/ws'
-                topics={['/topic/user']}
-                onConnect={() => {
-                    console.log("connected");
-                }}
-                onDisconnect={() => {
-                    console.log("Disconnected");
-                }}
-                onMessage={(msg) => {
-                    onDrawingEvent(msg)
-                    // var jobs = this.state.messages;
-                    // jobs.push(msg);
-                    // this.setState({ messages: jobs });
-                    // console.log(this.state);
-                }}
-                ref={(client) => {
-                    socketRef.current = client
-                }} /> */}
-
             <canvas ref={canvasRef} className="whiteboard" />
 
             <div ref={colorsRef} className="colors">
