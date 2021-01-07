@@ -76,6 +76,7 @@ const PrettoSlider = withStyles({
   active: {},
   valueLabel: {
     left: 'calc(-50% + 4px)',
+    color: '#000000',
   },
   track: {
     height: 8,
@@ -94,7 +95,7 @@ export default function CustomizedSlider() {
 
   return (
     <div className={classes.root}>
-      <PrettoSlider valueLabelDisplay="auto" aria-label="pretto slider" defaultValue={20} />
+      <PrettoSlider valueLabelDisplay="auto" aria-label="pretto slider" min={1} defaultValue={2} max={5}/>
       <div className={classes.margin} />
     </div>
   );
