@@ -14,8 +14,9 @@ function Eraser(props) {
         title="erase"
         icon={faEraser}
         className="fa-icon"
+        size="5x"
         onClick={handleEraser}
-      />
+        inverse />
     </div>
   );
 }

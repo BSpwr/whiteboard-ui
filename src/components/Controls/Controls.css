@@ -1,11 +1,33 @@
 .controls {
-  position: absolute;
-  top: 0;
+  /* justify-content: flex-start; */
   display: flex;
-  justify-content: center;
+  flex-direction: row;
   width: auto;
+  margin: auto;
+  background-color: rgb(78, 78, 78);
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  /* position: relative; */
+  box-shadow: 1em 1em 1em 1em rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.controls .fa-icon {
+
+.colorBox {
+  padding-right: 1em;
+}
+
+.eraserBox {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* .controls div {
+  flex-direction: row;
+} */
+
+/* .div {
+  flex-direction: row;
+} */
+
+/* .controls .fa-icon {
   cursor: pointer;
   font-size: 3rem;
   margin: 0.5rem;
@@ -19,4 +41,4 @@
     rgba(174, 238, 237, 1) 0%,
     rgba(181, 23, 23, 1) 100%
   );
-}
+} */
