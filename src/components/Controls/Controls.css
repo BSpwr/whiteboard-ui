@@ -11,12 +11,18 @@
 }
 
 .colorBox {
-  padding-right: 1em;
+  padding-right: 2em;
 }
 
 .eraserBox {
   margin-top: auto;
   margin-bottom: auto;
+  padding-right: 2em;
+}
+
+.sliderBox {
+  margin-top:auto;
+  padding-right: 2em;
 }
 
 /* .controls div {

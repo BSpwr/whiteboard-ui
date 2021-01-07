@@ -2,6 +2,7 @@ import React from "react";
 import "./Controls.css";
 import Color from "../Color/Color";
 import Eraser from "../Eraser/Eraser";
+import Slider from "../Slider/Slider";
 import { AppBar } from '@material-ui/core';
 
 
@@ -10,7 +11,7 @@ function Controls(props) {
     <div className="controls">
       <div className="colorBox"><Color handleColor={props.handleColor} /></div>
       <div className="eraserBox"><Eraser handleColor={props.handleColor} /></div>
-
+      <div className="sliderBox"><Slider /></div>
       {/* 
       <Eraser handleColor={props.handleColor} />
       <Eraser handleColor={props.handleColor} />
