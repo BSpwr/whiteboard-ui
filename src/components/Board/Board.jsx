@@ -15,6 +15,7 @@ function Board() {
     const [drawing, setDrawing] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [color, setColor] = useState("#000000");
+    const [thickness, setThickness] = useState(2);
 
     const connRef = useRef();
 
@@ -40,14 +41,14 @@ function Board() {
         window.addEventListener('resize', canvasResize);
     }, []);
 
-    const onDrawingEvent = (data) => {
-        let canvas = canvasRef.current;
-        const w = canvas.width;
-        const h = canvas.height;
-        drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, data.thickness);
-    }
-
     useEffect(() => {
+        const onDrawingEvent = (data) => {
+            let canvas = canvasRef.current;
+            const w = canvas.width;
+            const h = canvas.height;
+            drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, data.thickness);
+        }
+
         const stompConfig = {
             webSocketFactory: () => {
                 return new SockJS("http://localhost:8080/ws");
@@ -70,7 +71,6 @@ function Board() {
     }, []);
 
     const handleMouseDown = (e) => {
-        console.log(e.clientX, e.clientY);
         setDrawing(true);
         if (mode === modes["LINE"]) {
             let mouseX = e.clientX - canvasOffset.x;
@@ -80,7 +80,6 @@ function Board() {
     }
 
     const handleMouseUp = (e) => {
-        console.log(e.clientX, e.clientY);
         if (mode === modes["LINE"]) {
             handleDrawLine(e);
         }
@@ -94,12 +93,13 @@ function Board() {
     }
 
     const handleDrawLine = (e) => {
+        // TODO: add debounce so this does not fire too often
         let mouseX = e.clientX - canvasOffset.x;
         let mouseY = e.clientY - canvasOffset.y;
         if (drawing) {
             let activeColor = mode === modes["ERASE"] ? "#FFFFFF" : color;
-            drawLine(position.x, position.y, mouseX, mouseY, activeColor, 4);
-            publishDraw(position.x, position.y, mouseX, mouseY, activeColor, 4);
+            drawLine(position.x, position.y, mouseX, mouseY, activeColor, thickness);
+            publishDraw(position.x, position.y, mouseX, mouseY, activeColor, thickness);
         }
         setPosition({ x: mouseX, y: mouseY });
     }
@@ -107,7 +107,8 @@ function Board() {
     const drawLine = (x0, y0, x1, y1, lineColor, lineThickness) => {
         let canvas = canvasRef.current;
         let ctx = canvas.getContext("2d");
-
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
         ctx.strokeStyle = lineColor;
         ctx.lineWidth = lineThickness;
         ctx.beginPath();
@@ -143,9 +144,13 @@ function Board() {
         setMode(m);
     }
 
+    const handleThicknessChange = (e, val) => {
+        setThickness(val);
+    }
+
     return (
         <div className="board" ref={parentRef}>
-            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} />
+            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}

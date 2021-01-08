@@ -3,6 +3,8 @@ import "./Controls.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEraser, faPen, faRuler } from "@fortawesome/free-solid-svg-icons";
 import { CompactPicker } from "react-color";
+import Slider from "../Slider/Slider";
+import PropTypes from 'prop-types';
 
 function Controls(props) {
   return (
@@ -41,8 +43,17 @@ function Controls(props) {
           onClick={() => props.handleMode(props.modes["LINE"])}
           inverse />
       </div>
+      <div className="sliderBox"><Slider handleThickness={props.handleThickness} /></div>
     </div>
   );
 }
+
+Controls.propTypes = {
+  color: PropTypes.number.isRequired,
+  modes: PropTypes.object.isRequired,
+  handleMode: PropTypes.func.isRequired,
+  handleColor: PropTypes.func.isRequired,
+  handleThickness: PropTypes.func.isRequired,
+};
 
 export default Controls;
