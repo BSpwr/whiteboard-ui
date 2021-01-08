@@ -16,7 +16,6 @@ function Board() {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [color, setColor] = useState("#000000");
     const [thickness, setThickness] = useState(2);
-    const [clear, setClear] = useState(false);
 
     const connRef = useRef();
 
@@ -80,6 +79,13 @@ function Board() {
             let mouseY = e.clientY - canvasOffset.y;
             setPosition({ x: mouseX, y: mouseY });
         }
+        if(mode === modes["CLEAR"])
+        {
+            let canvas = canvasRef.current;
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        }
 
     }
 
@@ -141,8 +147,8 @@ function Board() {
         });
     }
 
-    const clearCanvas = (clear) => {
-        if(clear)
+    const clearCanvas = () => {
+        if(mode === modes["CLEAR"])
         {
             let canvas = canvasRef.current;
             let ctx = canvas.getContext("2d");
@@ -153,7 +159,7 @@ function Board() {
 
     
     useEffect(() => {
-        clearCanvas(clear);
+        clearCanvas();
     }, []);
 
     const handleColorChange = (c) => {
@@ -168,14 +174,10 @@ function Board() {
         setThickness(val);
     }
 
-    const handleClearBoard = (e, val) => {
-        setClear(val);
-
-    }
 
     return (
         <div className="board" ref={parentRef}>
-            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} handleClearBoard={handleClearBoard} />
+            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
