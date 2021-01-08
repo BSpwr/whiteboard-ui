@@ -1,7 +1,7 @@
 import React from "react";
 import "./Controls.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEraser, faPen, faRuler } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faPen, faRuler, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { CompactPicker } from "react-color";
 import Slider from "../Slider/Slider";
 import PropTypes from 'prop-types';
@@ -44,6 +44,16 @@ function Controls(props) {
           inverse />
       </div>
       <div className="sliderBox"><Slider handleThickness={props.handleThickness} /></div>
+      <div className="clearBox">
+        <FontAwesomeIcon
+          title="clear"
+          icon={faTrashAlt}
+          className="fa-icon"
+          size="5x"
+          onClick={() => props.handleMode(props.modes["CLEAR"])}
+          inverse />
+      </div>
+
     </div>
   );
 }

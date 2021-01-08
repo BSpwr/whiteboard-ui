@@ -6,7 +6,7 @@ import Controls from "../Controls/Controls";
 
 function Board() {
 
-    const modes = Object.freeze({ "PEN": 0, "LINE": 1, "ERASE": 2 });
+    const modes = Object.freeze({ "PEN": 0, "LINE": 1, "ERASE": 2, "CLEAR": 3 });
 
     const canvasRef = useRef(null);
     const parentRef = useRef(null);
@@ -16,8 +16,11 @@ function Board() {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [color, setColor] = useState("#000000");
     const [thickness, setThickness] = useState(2);
+    const [clear, setClear] = useState(false);
 
     const connRef = useRef();
+
+
 
     const canvasResize = () => {
         // TODO: add debounce so this does not fire too often
@@ -77,6 +80,7 @@ function Board() {
             let mouseY = e.clientY - canvasOffset.y;
             setPosition({ x: mouseX, y: mouseY });
         }
+
     }
 
     const handleMouseUp = (e) => {
@@ -118,7 +122,7 @@ function Board() {
         ctx.closePath();
     }
 
-    const publishDraw = (x0, y0, x1, y1, lineColor, lineThickness) => {
+    const publishDraw = (x0, y0, x1, y1, lineColor, lineThickness, clearBoard) => {
         let canvas = canvasRef.current;
         const w = canvas.width;
         const h = canvas.height;
@@ -132,9 +136,25 @@ function Board() {
                 y1: y1 / h,
                 color: lineColor,
                 thickness: lineThickness,
+                clear: clearBoard
             })
         });
     }
+
+    const clearCanvas = (clear) => {
+        if(clear)
+        {
+            let canvas = canvasRef.current;
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        }
+    };
+
+    
+    useEffect(() => {
+        clearCanvas(clear);
+    }, []);
 
     const handleColorChange = (c) => {
         setColor(c);
@@ -148,9 +168,14 @@ function Board() {
         setThickness(val);
     }
 
+    const handleClearBoard = (e, val) => {
+        setClear(val);
+
+    }
+
     return (
         <div className="board" ref={parentRef}>
-            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} />
+            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} handleClearBoard={handleClearBoard} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
