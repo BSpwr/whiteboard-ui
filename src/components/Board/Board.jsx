@@ -19,7 +19,8 @@ function Board() {
     const [sessionID, setSessionID] = useState("UKG-TechStars");
 
     const connRef = useRef(null);
-    const subscriptionRef = useRef(null);
+    const subscriptionLineRef = useRef(null);
+    const subscriptionClearRef = useRef(null);
 
     const canvasResize = () => {
         // TODO: add debounce so this does not fire too often
@@ -53,6 +54,10 @@ function Board() {
             drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, data.thickness);
         }
 
+        const onClearEvent = () => {
+            clearCanvas();
+        }
+
         const stompConfig = {
             webSocketFactory: () => {
                 return new SockJS("http://localhost:8080/ws");
@@ -64,9 +69,13 @@ function Board() {
             onConnect: function (frame) {
                 // The return object has a method called `unsubscribe`
                 if (!connRef.current?.connected) return;
-                subscriptionRef.current = connRef.current.subscribe(`/topic/whiteboard/line/${sessionID}`, function (message) {
+                subscriptionLineRef.current = connRef.current.subscribe(`/topic/whiteboard/line/${sessionID}`, (message) => {
                     const payload = JSON.parse(message.body);
                     onDrawingEvent(payload);
+                });
+                // TODO: remove unused arg?
+                subscriptionClearRef.current = connRef.current.subscribe(`/topic/whiteboard/clear/${sessionID}`, (message) => {
+                    onClearEvent();
                 });
             }
         };
@@ -145,6 +154,14 @@ function Board() {
         });
     }
 
+    const publishClear = () => {
+        if (!connRef.current?.connected) return;
+        connRef.current.publish({
+            destination: `/app/whiteboard/clear/${sessionID}`,
+            body: "clear"
+        });
+    }
+
     const handleColorChange = (c) => {
         setColor(c);
     }
@@ -159,10 +176,27 @@ function Board() {
 
     const handleSessionIDChange = (id) => {
         setSessionID(id);
-        if (subscriptionRef.current) {
-            subscriptionRef.current.unsubscribe();
-            subscriptionRef.current = null;
+        if (subscriptionLineRef.current) {
+            subscriptionLineRef.current.unsubscribe();
+            subscriptionLineRef.current = null;
         }
+        if (subscriptionClearRef.current) {
+            subscriptionClearRef.current.unsubscribe();
+            subscriptionClearRef.current = null;
+        }
+    }
+
+    const clearCanvas = () => {
+        let canvas = canvasRef.current;
+        if (!canvas) return;
+        let ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    const handleClear = () => {
+        clearCanvas();
+        publishClear();
     }
 
     return (
@@ -173,7 +207,8 @@ function Board() {
                 handleMode={handleModeChange}
                 handleColor={handleColorChange}
                 handleThickness={handleThicknessChange}
-                handleSessionID={handleSessionIDChange} />
+                handleSessionID={handleSessionIDChange}
+                handleClear={handleClear} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}

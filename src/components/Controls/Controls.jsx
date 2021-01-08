@@ -1,7 +1,7 @@
 import React from "react";
 import "./Controls.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEraser, faPen, faRuler } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faPen, faRuler, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { CompactPicker } from "react-color";
 import Slider from "../Slider/Slider";
 import PropTypes from 'prop-types';
@@ -64,6 +64,16 @@ function Controls(props) {
           onChange={(event) => props.handleSessionID(event.target.value)}
         />
       </div>
+      <div className="clearBox">
+        <FontAwesomeIcon
+          title="clear"
+          icon={faTrashAlt}
+          className="fa-icon"
+          size="5x"
+          onClick={props.handleClear}
+          inverse />
+      </div>
+
     </div>
   );
 }
@@ -72,6 +82,7 @@ Controls.propTypes = {
   sessionID: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
   modes: PropTypes.object.isRequired,
+  handleClear: PropTypes.func.isRequired,
   handleMode: PropTypes.func.isRequired,
   handleColor: PropTypes.func.isRequired,
   handleThickness: PropTypes.func.isRequired,
