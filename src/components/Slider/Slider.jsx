@@ -79,7 +79,7 @@ const CustomizedSlider = (props) => {
 
   return (
     <div className={classes.root}>
-      <PrettoSlider valueLabelDisplay="auto" aria-label="pretto slider" step={0.1} min={0} defaultValue={2} max={40} onChange={props.handleThickness} />
+      <PrettoSlider valueLabelDisplay="auto" aria-label="pretto slider" step={0.1} min={0.1} defaultValue={2} max={40} onChange={props.handleThickness} />
       <div className={classes.margin} />
     </div>
   );
