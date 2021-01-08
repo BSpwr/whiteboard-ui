@@ -15,20 +15,9 @@ function Controls(props) {
           props.handleColor(colorPicker.hex)
         } />
       </div>
-      <div className="eraserBox">
-        <FontAwesomeIcon
-          title="erase"
-          icon={faEraser}
-          className="fa-icon"
-          size="5x"
-          onClick={() => {
-            props.handleMode(props.modes["ERASE"]);
-          }}
-          inverse />
-      </div>
       <div className="penBox">
         <FontAwesomeIcon
-          title="erase"
+          title="Pen"
           icon={faPen}
           className="fa-icon"
           size="5x"
@@ -37,11 +26,22 @@ function Controls(props) {
       </div>
       <div className="rulerBox">
         <FontAwesomeIcon
-          title="erase"
+          title="Line"
           icon={faRuler}
           className="fa-icon"
           size="5x"
           onClick={() => props.handleMode(props.modes["LINE"])}
+          inverse />
+      </div>
+      <div className="eraserBox">
+        <FontAwesomeIcon
+          title="Eraser"
+          icon={faEraser}
+          className="fa-icon"
+          size="5x"
+          onClick={() => {
+            props.handleMode(props.modes["ERASE"]);
+          }}
           inverse />
       </div>
       <div className="sliderBox"><Slider handleThickness={props.handleThickness} /></div>
@@ -66,7 +66,7 @@ function Controls(props) {
       </div>
       <div className="clearBox">
         <FontAwesomeIcon
-          title="clear"
+          title="Clear"
           icon={faTrashAlt}
           className="fa-icon"
           size="5x"
