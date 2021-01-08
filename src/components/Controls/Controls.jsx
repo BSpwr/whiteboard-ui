@@ -5,6 +5,7 @@ import { faEraser, faPen, faRuler } from "@fortawesome/free-solid-svg-icons";
 import { CompactPicker } from "react-color";
 import Slider from "../Slider/Slider";
 import PropTypes from 'prop-types';
+import TextField from '@material-ui/core/TextField';
 
 function Controls(props) {
   return (
@@ -44,16 +45,37 @@ function Controls(props) {
           inverse />
       </div>
       <div className="sliderBox"><Slider handleThickness={props.handleThickness} /></div>
+      <div className="sessionBox">
+        <TextField
+          variant="filled"
+          InputLabelProps={{
+            style: {
+              color: "white"
+            }
+          }}
+          InputProps={{
+            style: {
+              color: "white"
+            }
+          }}
+          className="sessionName"
+          label="Session ID"
+          value={props.sessionID}
+          onChange={(event) => props.handleSessionID(event.target.value)}
+        />
+      </div>
     </div>
   );
 }
 
 Controls.propTypes = {
-  color: PropTypes.number.isRequired,
+  sessionID: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
   modes: PropTypes.object.isRequired,
   handleMode: PropTypes.func.isRequired,
   handleColor: PropTypes.func.isRequired,
   handleThickness: PropTypes.func.isRequired,
+  handleSessionID: PropTypes.func.isRequired,
 };
 
 export default Controls;

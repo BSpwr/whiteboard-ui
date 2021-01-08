@@ -16,8 +16,10 @@ function Board() {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [color, setColor] = useState("#000000");
     const [thickness, setThickness] = useState(2);
+    const [sessionID, setSessionID] = useState("UKG-TechStars");
 
-    const connRef = useRef();
+    const connRef = useRef(null);
+    const subscriptionRef = useRef(null);
 
     const canvasResize = () => {
         // TODO: add debounce so this does not fire too often
@@ -41,6 +43,8 @@ function Board() {
         window.addEventListener('resize', canvasResize);
     }, []);
 
+
+
     useEffect(() => {
         const onDrawingEvent = (data) => {
             let canvas = canvasRef.current;
@@ -59,7 +63,8 @@ function Board() {
             // Subscriptions should be done inside onConnect as those need to reinstated when the broker reconnects
             onConnect: function (frame) {
                 // The return object has a method called `unsubscribe`
-                connRef.current.subscribe('/topic/msg', function (message) {
+                if (!connRef.current?.connected) return;
+                subscriptionRef.current = connRef.current.subscribe(`/topic/whiteboard/line/${sessionID}`, function (message) {
                     const payload = JSON.parse(message.body);
                     onDrawingEvent(payload);
                 });
@@ -68,7 +73,7 @@ function Board() {
 
         connRef.current = new Client(stompConfig);
         connRef.current.activate();
-    }, []);
+    }, [sessionID]);
 
     const handleMouseDown = (e) => {
         setDrawing(true);
@@ -106,7 +111,9 @@ function Board() {
 
     const drawLine = (x0, y0, x1, y1, lineColor, lineThickness) => {
         let canvas = canvasRef.current;
+        if (!canvas) return;
         let ctx = canvas.getContext("2d");
+        if (!ctx) return;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.strokeStyle = lineColor;
@@ -120,11 +127,13 @@ function Board() {
 
     const publishDraw = (x0, y0, x1, y1, lineColor, lineThickness) => {
         let canvas = canvasRef.current;
+        if (!canvas) return;
         const w = canvas.width;
         const h = canvas.height;
 
+        if (!connRef.current?.connected) return;
         connRef.current.publish({
-            destination: "/app/user-all",
+            destination: `/app/whiteboard/line/${sessionID}`,
             body: JSON.stringify({
                 x0: x0 / w,
                 y0: y0 / h,
@@ -148,9 +157,23 @@ function Board() {
         setThickness(val);
     }
 
+    const handleSessionIDChange = (id) => {
+        setSessionID(id);
+        if (subscriptionRef.current) {
+            subscriptionRef.current.unsubscribe();
+            subscriptionRef.current = null;
+        }
+    }
+
     return (
         <div className="board" ref={parentRef}>
-            <Controls color={color} modes={modes} handleMode={handleModeChange} handleColor={handleColorChange} handleThickness={handleThicknessChange} />
+            <Controls sessionID={sessionID}
+                color={color}
+                modes={modes}
+                handleMode={handleModeChange}
+                handleColor={handleColorChange}
+                handleThickness={handleThicknessChange}
+                handleSessionID={handleSessionIDChange} />
             <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
